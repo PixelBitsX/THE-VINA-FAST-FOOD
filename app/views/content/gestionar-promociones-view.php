@@ -18,35 +18,32 @@
                                     <input type="hidden" name="modulo_promocion" value="registrar">
 
                                     <div class="row g-3">
-                                        <div class="form-group col-lg-4">
-                                            <label class="form-label">Nombre:</label>
-                                            <input type="text" class="form-control" name="nombre_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ]{5,50}$" required>
-                                            <small class="form-text text-muted">Ejemplo: Combo Doble Hamburguesa</small>
-                                        </div>
-                                        <div class="form-group col-lg-4">
-                                            <label class="form-label">Fecha de inicio:</label>
-                                            <input type="text" class="form-control" name="fecha_incio_promocion" pattern="^(\d{10})/" required>
-                                            <small class="form-text text-muted">Ejemplo: 01/01/2025</small>
-                                        </div>
+                                    <div class="form-group col-lg-4">
+                                        <label class="form-label">Nombre:</label>
+                                        <input type="text" class="form-control" name="nombre_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{5,50}$" required>
+                                        <small class="form-text text-muted">Ejemplo: Combo Doble Hamburguesa</small>
                                     </div>
-                                    <div class="row g-3">
-                                        <div class="form-group col-lg-4">
-                                            <label class="form-label">Fecha de finalizacion:</label>
-                                            <input type="text" class="form-control" name="fecha_fin_promocion" pattern="^(\d{10})/" required>
-                                            <small class="form-text text-muted">Ejemplo: 12/12/2025</small>
-                                        </div>
-                                        <div class="row g-3">
-                                        <div class="form-group col-lg-4">
-                                            <label class="form-label">Descuento:</label>
-                                            <input type="text" class="form-control" name="descuento_promocion" pattern="^(\d{2,3}%)$" required>
-                                            <small class="form-text text-muted">Ejemplo: "50%"</small>
-                                        </div>
-                                        <div class="form-group col-lg-4">
-                                            <label class="form-label">Detalle:</label>
-                                            <input type="text" class="form-control" name="detalle_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ]{250}$" required>
-                                            <small class="form-text text-muted">Ejemplo: combo doble perro sencillo y doble hamburguesa con refresco</small>
-                                        </div>
+                                    <div class="form-group col-lg-4">
+                                        <label class="form-label">Fecha de inicio:</label>
+                                        <input type="text" class="form-control" name="fecha_inicio_promocion" pattern="^\d{2}\/\d{2}\/\d{4}$" required>
+                                        <small class="form-text text-muted">Ejemplo: 01/01/2025</small>
                                     </div>
+                                    <div class="form-group col-lg-4">
+                                        <label class="form-label">Fecha de finalizacion:</label>
+                                        <input type="text" class="form-control" name="fecha_fin_promocion" pattern="^\d{2}\/\d{2}\/\d{4}$" required>
+                                        <small class="form-text text-muted">Ejemplo: 12/12/2025</small>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label class="form-label">Descuento:</label>
+                                        <input type="text" class="form-control" name="descuento_promocion" pattern="^\d{2,3}$" required>
+                                        <small class="form-text text-muted">Ejemplo: "50"</small>
+                                    </div>
+                                    <div class="form-group col-lg-4">
+                                        <label class="form-label">Detalle:</label>
+                                        <input type="text" class="form-control" name="detalle_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s.,;?!-]{1,250}$" required>
+                                        <small class="form-text text-muted">Ejemplo: combo doble perro sencillo y doble hamburguesa con refresco</small>
+                                    </div>
+                                </div>
 
                                     <div class="modal-footer text-center justify-content-center">
                                     <button type="reset" class="btn btn-danger d-inline-flex"><i class="ti ti-trash"></i>Limpiar</button>
@@ -88,9 +85,6 @@
                                     <div class="col-sm-5 col-md-4">
                                         <form id="form-busqueda-Promociones" class="input-group" method="">
                                             <input type="text" class="form-control" placeholder="Ingresa tu búsqueda" name="busqueda" id="busqueda">
-                                            <!--<button class="btn btn-outline-primary" type="submit">Buscar</button>
-                                            <button class="btn btn-outline-secondary" type="button" id="limpiar-busqueda">Limpiar</button>
-                                            <input type="hidden" name="actualizar_tabla" value="1">-->
                                         </form>
                                     </div>
                                     <div class="col-sm-5 col-md-4">

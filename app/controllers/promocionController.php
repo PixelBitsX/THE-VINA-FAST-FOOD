@@ -10,15 +10,15 @@
 		$insPromocion = new promocionModels();
 
 		if($_POST['modulo_promocion']=="registrar"){
-			echo $insPromocion->registrarPromocionModel();
+			echo $insPromocion->registrarPromocionesModel();
 		}
 		
 		if($_POST['modulo_promocion']=="eliminar"){
-			echo $insPromocion->eliminarPromocionModel();
+			echo $insPromocion->eliminarPromocionesModel();
 		}
 
 		if($_POST['modulo_promocion']=="actualizar"){
-			echo $insPromocion->actualizarPromocionModel();
+			echo $insPromocion->actualizarPromocionesModel();
 		}
 
     }else{
