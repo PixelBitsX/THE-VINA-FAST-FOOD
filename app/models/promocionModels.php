@@ -351,149 +351,183 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
 
         /*Actualizar promociones */
         public function actualizarPromocionesModel(){
-            
-            /*Limpiar Inyección de SQL*/
-            $id= $this->limpiarCadena($_POST['nombre_promocion']);
+            $id_promocion = $this->limpiarCadena($_POST['id_promocion']); 
 
-            /*hacemos la consulta */
-            $datos= $this->ejecutarConsulta("SELECT * FROM promociones WHERE id_promocion= '$id'");
+            $check_promocion = $this->ejecutarConsulta("SELECT * FROM promociones WHERE id_promocion = '$id_promocion'");
 
-            /*verificamos que la promocion seleccionado exista */
-            if($datos ->rowCount()<=0){
+            /*Verificamos que la promoción seleccionada exista */
+            if($check_promocion->rowCount() <= 0){
                 $alerta=[
                     "tipo" => "simple",
-                    "titulo" => "Promocion no encontrada",
-                    "texto" => "La promocion ha intentado actualizar no se encuentra en la base de datos",
+                    "titulo" => "Promoción no encontrada",
+                    "texto" => "La promoción que ha intentado actualizar no se encuentra en la base de datos.",
                     "icono" => "error"
                 ];
                 return json_encode($alerta);
                 exit();
-
-            }else{
-                $datos=$datos ->fetch();/*hacemos el arrays */
+            } else {
+                $datos_promocion_original = $check_promocion->fetch();/*Hacemos el array */
             }
 
-            /*Limpiar Inyección de SQL*/
+            /*Limpiar Inyección de SQL - Obtener los nuevos datos del formulario*/
             $nombre= $this->limpiarCadena($_POST['nombre_promocion']);
-            $fechainicio= $this->limpiarCadena($_POST['fecha_inicio_promocion']);
-            $fechafin= $this->limpiarCadena($_POST['fecha_fin_promocion']);
-            $descuento= $this->limpiarCadena($_POST['descuento_promocion']);
-            $detalle= $this->limpiarCadena($_POST['detalle_promocion']);
+            $fecha_inicio = $this->limpiarCadena($_POST['fecha_inicio_promocion']);
+            $fecha_fin = $this->limpiarCadena($_POST['fecha_fin_promocion']);
+            $descuento = $this->limpiarCadena($_POST['descuento_promocion']);
+            $detalle = $this->limpiarCadena($_POST['detalle_promocion']);
             
             /*Verificar Campos obligatorios*/
             if(
-                $nombre == "" || $fechainicio == "" || $fechafin == "" || $descuento == "" || $detalle == ""
+                $nombre == "" || $fecha_inicio == "" || $fecha_fin == "" || $descuento == ""
             ){
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Ocurrió un error inesperado",
-                    "texto" => "No puedes enviar el formulario con campos vacíos",
+                    "texto" => "No puedes enviar el formulario con campos obligatorios vacíos.",
                     "icono" => "error",
                 ];
                 return json_encode($alerta);
                 exit();
             }
 
-            /*Verificando que el tipo de dato y longitud del texto*/
-            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{5,50}$", $nombre)){
+            /*Verificación de Formatos y Duplicados*/
+            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ\s]{5,50}$", $nombre)){
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Nombre no válido",
-                    "texto" => "El nombre no debe contener numeros ni carácteres especiales, además, debe tener un longitud de entre 5 a 50 carácteres",
+                    "texto" => "El nombre no debe contener números ni caracteres especiales, y debe tener una longitud de entre 5 a 50 caracteres.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
-            }else{
-                /*Para comprobar que la cedula no se encuentra ya registrada */
-                $check_nombre= $this->ejecutarConsulta("SELECT nombre_promocion FROM promociones WHERE nombre_promocion='$nombre'");
-                if($check_nombre->rowCount()>0){
-                $alerta=[
-                    "tipo" => "simple",
-                    "titulo" => "El nombre ya existente",
-                    "texto" => "El nombre que está ingresando ya se encuentra registrado, por favor elija otro",
-                    "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
+            } else {
+                // Comprobar si el NUEVO nombre ya existe, PERO NO si es el mismo nombre ORIGINAL de esta promoción
+                if (strtolower($nombre) != strtolower($datos_promocion_original['nombre_promocion'])) {
+                    $check_nombre = $this->ejecutarConsulta("SELECT nombre_promocion FROM promociones WHERE nombre_promocion='$nombre'");
+                    if($check_nombre->rowCount() > 0){
+                        $alerta=[
+                            "tipo" => "simple",
+                            "titulo" => "El nombre ya existe",
+                            "texto" => "El nombre que está ingresando ya se encuentra registrado para otra promoción, por favor elija otro.",
+                            "icono" => "error",
+                        ];
+                        return json_encode($alerta);
+                        exit();
+                    }
                 }
             }
             
-            if($this->verificarDatos("^\d{2}\/\d{2}\/\d{4}$", $fechainicio)){
+            if($this->verificarDatos("^\d{4}-\d{2}-\d{2}$", $fecha_inicio)){
                 $alerta=[
                     "tipo" => "simple",
-                    "titulo" => "Fecha no válida",
-                    "texto" => "La fecha no debe contener más de 10 digitos",
+                    "titulo" => "Fecha de inicio no válida",
+                    "texto" => "El formato de la fecha de inicio debe ser YYYY-MM-DD.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
             }
             
-            if($this->verificarDatos("^\d{2}\/\d{2}\/\d{4}$", $fechafin)){
+            if($this->verificarDatos("^\d{4}-\d{2}-\d{2}$", $fecha_fin)){
                 $alerta=[
                     "tipo" => "simple",
-                    "titulo" => "Fecha no válida",
-                    "texto" => "La fecha no debe contener más de 10 digitos",
+                    "titulo" => "Fecha de fin no válida",
+                    "texto" => "El formato de la fecha de fin debe ser YYYY-MM-DD.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
             }
-            
-            if($this->verificarDatos("^\d{2,3}$", $descuento)){
+
+            if($this->verificarDatos("^\d{1,3}$", $descuento)){
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Descuento no válido",
-                    "texto" => "El descuento debe escribirse en porcentajes, debe tener un longitud de 3 carácteres como maximo",
+                    "texto" => "El descuento debe ser un número de 1 a 3 dígitos (ej. 5, 50, 100) sin caracteres especiales.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
             }
             
-            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s.,;?!-]{1,250}$", $detalle)){
+            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{0,255}$", $detalle)){
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Detalle no válido",
-                    "texto" => "el detalle no debe superar los 250 caracteres",
+                    "texto" => "El detalle no debe superar los 255 caracteres y solo puede contener letras y espacios.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
             }
-            
-            $datos_registro_promociones=[
+
+            /*Hacemos el Array*/
+            $datos_promocion = [
                 [
-                    "campo_nombre"=>"nombre_promocion",
-                    "campo_marcador"=>":Nombre",
-                    "campo_valor"=>$nombre
+                    "campo_nombre" => "nombre_promocion",
+                    "campo_marcador" => ":Nombre",
+                    "campo_valor" => $nombre
                 ],
                 [
-                    "campo_nombre"=>"fecha_inicio_promocion",
-                    "campo_marcador"=>":Fecha_inicio",
-                    "campo_valor"=>$fechainicio
+                    "campo_nombre" => "fecha_inicio_promocion",
+                    "campo_marcador" => ":Fecha_inicio",
+                    "campo_valor" => $fecha_inicio
                 ],
                 [
-                    "campo_nombre"=>"fecha_fin_promocion",
-                    "campo_marcador"=>":Fecha_fin",
-                    "campo_valor"=>$fechafin
+                    "campo_nombre" => "fecha_fin_promocion",
+                    "campo_marcador" => ":Fecha_fin",
+                    "campo_valor" => $fecha_fin
                 ],
                 [
-                    "campo_nombre"=>"descuento_promocion",
-                    "campo_marcador"=>":Descuento",
-                    "campo_valor"=>$descuento
+                    "campo_nombre" => "descuento_promocion",
+                    "campo_marcador" => ":Descuento",
+                    "campo_valor" => $descuento
                 ],
                 [
-                    "campo_nombre"=>"detalle_promocion",
-                    "campo_marcador"=>":Detalle",
-                    "campo_valor"=>$detalle
-                ],
+                    "campo_nombre" => "detalle_promocion",
+                    "campo_marcador" => ":Detalle",
+                    "campo_valor" => $detalle
+                ]
             ];
+
+            $condicion = [
+                "condicion_campo" => "id_promocion",
+                "condicion_marcador" => ":id_promocion",
+                "condicion_valor" => $id_promocion
+            ];
+
+            $actualizar_promocion = $this->actualizarDatos(
+                "promociones",
+                $datos_promocion,
+                $condicion
+            );
+
+            /*Verificar si la actualización fue exitosa*/
+            if($actualizar_promocion){
+                if($actualizar_promocion->rowCount() == 1){
+                    $alerta=[
+                        "tipo" => "recargar",
+                        "titulo" => "Promoción actualizada",
+                        "texto" => "La promoción **".$nombre."** ha sido actualizada exitosamente.",
+                        "icono" => "success",
+                    ];
+                } else {
+                    $alerta=[
+                        "tipo" => "simple",
+                        "titulo" => "No se pudo actualizar",
+                        "texto" => "No se realizó ningún cambio o hubo un problema al actualizar la promoción.",
+                        "icono" => "info",
+                    ];
+                }
+            } else {
+                $alerta=[
+                    "tipo" => "simple",
+                    "titulo" => "Error interno del servidor",
+                    "texto" => "No se pudo procesar la actualización. Por favor, intente de nuevo más tarde o contacte al soporte.",
+                    "icono" => "error",
+                ];
+            }
+            return json_encode($alerta);
         }
     }
-
-
-
-
 ?>
