@@ -100,17 +100,19 @@
                     return json_encode($alerta);
                     exit();
             }
-            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s.,;?!-]{0,255}$", $detalle)){
+            if ($detalle != "") {
+                if ($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{0,255}$", $detalle)) {
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Detalle no válido",
-                    "texto" => "el detalle no debe superar los 250 caracteres",
+                    "texto" => "el detalle no debe superar los 255 caracteres",
                     "icono" => "error",
                     ];
                     return json_encode($alerta);
                     exit();
+                }
             }
-            
+
             
             $datos_registro_promociones=[
                 [
@@ -159,12 +161,7 @@
                 ];
                 
             }
-            /*return json_encode($alerta);*/ 
-            // Reemplaza o comenta las líneas `return json_encode($alerta);` con esto:
-echo '<pre>'; // Agregamos una etiqueta <pre> para un formato legible en el navegador
-var_dump($alerta); // Esto mostrará el contenido de tu array $alerta
-echo '</pre>';
-exit(); // Esto detendrá la ejecución del script aquí y no intentará enviar más nada.
+            return json_encode($alerta); 
         }
 
         /*Listar Promociones */
@@ -311,7 +308,7 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
         public function eliminarPromocionesModel(){
             
             /*Limpiar Inyección de SQL*/
-            $id= $this->limpiarCadena($_POST['nombre_promocion']);
+            $id= $this->limpiarCadena($_POST['id_promocion']);
 
             /*hacemos la consulta */
             $datos= $this->ejecutarConsulta("SELECT * FROM promociones WHERE id_promocion= '$id'");
@@ -320,8 +317,8 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
             if($datos ->rowCount()<=0){
                 $alerta=[
                     "tipo" => "simple",
-                    "titulo" => "promocion no encontrada",
-                    "texto" => "La promocion que ha intentado eliminar no se encuentra registrada",
+                    "titulo" => "Error al eliminar",
+                    "texto" => "La promocion que ha intentado eliminar no se Pudo eliminar de la base de datos",
                     "icono" => "error"
                 ];
                 return json_encode($alerta);
@@ -331,7 +328,7 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
                 $datos=$datos ->fetch();/*hacemos el arrays */
             }
 
-            $eliminarpromocion= $this->eliminarDatos("promociones", "nombre_promocion", $id);
+            $eliminarpromocion= $this->eliminarDatos("promociones", "id_promocion", $id);
             if($eliminarpromocion ->rowCount()==1){ /*Para verificar si se hizo la eliminación o no */
                 
                 $alerta=[
