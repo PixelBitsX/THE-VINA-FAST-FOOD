@@ -1,6 +1,4 @@
 <?php
-        /*PRUEBA PARA EL NUEVO COMIT 1 */
-
     namespace app\models;
     use app\models\DB;
 
@@ -31,7 +29,7 @@
             }
 
             /*Verificando que el tipo de dato y longitud del texto*/
-            if($this->verificarDatos("([a-zA-ZáéíóúüÁÉÍÓÚñÑ]{5,50})", $nombre)){
+            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ\s]{5,50}$", $nombre)){
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Nombre no válido",
@@ -54,28 +52,43 @@
                     exit();
                 }
             }
-            
-            if($this->verificarDatos("^\d{2}\/\d{2}\/\d{4}$", $fechainicio)){
+
+            $fechaInicioValida = \DateTime::createFromFormat('Y-m-d', $fechainicio);
+            if ($fechaInicioValida === false || $fechaInicioValida->format('Y-m-d') !== $fechainicio) {
                 $alerta=[
                     "tipo" => "simple",
-                    "titulo" => "Fecha no válida",
-                    "texto" => "La fecha no debe contener más de 10 digitos",
+                    "titulo" => "Fecha de inicio no válida",
+                    "texto" => "La fecha de inicio no debe ser luego de la fecha de finalización.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
             }
-            
-            if($this->verificarDatos("^\d{2}\/\d{2}\/\d{4}$", $fechafin)){
+
+            $fechaFinValida = \DateTime::createFromFormat('Y-m-d', $fechafin);
+            if ($fechaFinValida === false || $fechaFinValida->format('Y-m-d') !== $fechafin) {
                 $alerta=[
                     "tipo" => "simple",
-                    "titulo" => "Fecha no válida",
-                    "texto" => "La fecha no debe contener más de 10 digitos",
+                    "titulo" => "Fecha de finalización no válida",
+                    "texto" => "La fecha de finalización debe ser una fecha posterior a la de inicio.",
                     "icono" => "error",
-                    ];
-                    return json_encode($alerta);
-                    exit();
+                ];
+                return json_encode($alerta);
+                exit();
             }
+
+            // --- VALIDACIÓN ADICIONAL: La fecha de fin no puede ser anterior a la fecha de inicio ---
+            if ($fechaInicioValida > $fechaFinValida) {
+                $alerta=[
+                    "tipo" => "simple",
+                    "titulo" => "Fechas inválidas",
+                    "texto" => "La fecha de finalización no puede ser anterior a la fecha de inicio.",
+                    "icono" => "error",
+                ];
+                return json_encode($alerta);
+                exit();
+            }
+            
             
             if($this->verificarDatos("^\d{2,3}$", $descuento)){
                 $alerta=[
@@ -87,7 +100,7 @@
                     return json_encode($alerta);
                     exit();
             }
-            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s.,;?!-]{1,250}$", $detalle)){
+            if($this->verificarDatos("^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s.,;?!-]{0,255}$", $detalle)){
                 $alerta=[
                     "tipo" => "simple",
                     "titulo" => "Detalle no válido",
@@ -146,7 +159,12 @@
                 ];
                 
             }
-            return json_encode($alerta);
+            /*return json_encode($alerta);*/ 
+            // Reemplaza o comenta las líneas `return json_encode($alerta);` con esto:
+echo '<pre>'; // Agregamos una etiqueta <pre> para un formato legible en el navegador
+var_dump($alerta); // Esto mostrará el contenido de tu array $alerta
+echo '</pre>';
+exit(); // Esto detendrá la ejecución del script aquí y no intentará enviar más nada.
         }
 
         /*Listar Promociones */

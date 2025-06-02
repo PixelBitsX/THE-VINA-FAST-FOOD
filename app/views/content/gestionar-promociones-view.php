@@ -20,17 +20,17 @@
                                     <div class="row g-3">
                                     <div class="form-group col-lg-4">
                                         <label class="form-label">Nombre:</label>
-                                        <input type="text" class="form-control" name="nombre_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{5,50}$" required>
+                                        <input type="text" class="form-control" name="nombre_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ\s]{5,50}$" required>
                                         <small class="form-text text-muted">Ejemplo: Combo Doble Hamburguesa</small>
                                     </div>
                                     <div class="form-group col-lg-4">
                                         <label class="form-label">Fecha de inicio:</label>
-                                        <input type="text" class="form-control" name="fecha_inicio_promocion" pattern="^\d{2}\/\d{2}\/\d{4}$" required>
+                                        <input type="date" class="form-control" name="fecha_inicio_promocion" required>
                                         <small class="form-text text-muted">Ejemplo: 01/01/2025</small>
                                     </div>
                                     <div class="form-group col-lg-4">
                                         <label class="form-label">Fecha de finalizacion:</label>
-                                        <input type="text" class="form-control" name="fecha_fin_promocion" pattern="^\d{2}\/\d{2}\/\d{4}$" required>
+                                        <input type="date" class="form-control" name="fecha_fin_promocion" required>
                                         <small class="form-text text-muted">Ejemplo: 12/12/2025</small>
                                     </div>
                                     <div class="form-group col-lg-4">
@@ -40,7 +40,7 @@
                                     </div>
                                     <div class="form-group col-lg-4">
                                         <label class="form-label">Detalle:</label>
-                                        <input type="text" class="form-control" name="detalle_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s.,;?!-]{1,250}$" required>
+                                        <input type="text" class="form-control" name="detalle_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{0,255}$">
                                         <small class="form-text text-muted">Ejemplo: combo doble perro sencillo y doble hamburguesa con refresco</small>
                                     </div>
                                 </div>
