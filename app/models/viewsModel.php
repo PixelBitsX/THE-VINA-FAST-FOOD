@@ -6,7 +6,8 @@
             //creamos la lista de vistas disponibles en el sistema
             $listaBlanca=[
                 "dashboard", "logOut",  "gestionar-pedidos", "gestionar-promociones",
-                "gestionar-usuarios",  "actualizar-usuario", "actualizar-usuario-foto", 
+                "gestionar-usuarios",  "actualizar-usuario", "actualizar-usuario-foto",
+                "actualizar-promocion",
             ];
 
             $contenido = "404"; // Valor por defecto

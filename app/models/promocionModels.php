@@ -165,144 +165,144 @@
         }
 
         /*Listar Promociones */
-public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda, $orden = ""){
-    /*Evitamos inyección de SQL */
-    $pagina = $this->limpiarCadena($pagina);
-    $registros = $this->limpiarCadena($registros);
-    $url = $this->limpiarCadena($url);
-    $url = APP_URL . $url . "/";
-    $busqueda = $this->limpiarCadena($busqueda);
-    $orden = $this->limpiarCadena($orden);
-    $tabla = "";
+        public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda, $orden = ""){
+            /*Evitamos inyección de SQL */
+            $pagina = $this->limpiarCadena($pagina);
+            $registros = $this->limpiarCadena($registros);
+            $url = $this->limpiarCadena($url);
+            $url = APP_URL . $url . "/";
+            $busqueda = $this->limpiarCadena($busqueda);
+            $orden = $this->limpiarCadena($orden);
+            $tabla = "";
 
-    $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
-    $inicio = ($pagina > 0) ? ($pagina * $registros) - $registros : 0;
+            $pagina = (isset($pagina) && $pagina > 0) ? (int)$pagina : 1;
+            $inicio = ($pagina > 0) ? ($pagina * $registros) - $registros : 0;
 
-    /*--Verificar si viene la variable orden y si no viene dejar un orden por defecto */
-    $order_by = "nombre_promocion ASC";
-    if ($orden != "") {
-        $order_by = $orden;
-    }
+            /*--Verificar si viene la variable orden y si no viene dejar un orden por defecto */
+            $order_by = "nombre_promocion ASC";
+            if ($orden != "") {
+                $order_by = $orden;
+            }
 
-    if (isset($busqueda) && $busqueda != "") {
-        $consulta_datos = "SELECT * FROM promociones WHERE (
-            nombre_promocion LIKE '%$busqueda%' OR
-            fecha_inicio_promocion LIKE '%$busqueda%' OR
-            fecha_fin_promocion LIKE '%$busqueda%' OR
-            descuento_promocion LIKE '%$busqueda%' OR
-            detalle_promocion LIKE '%$busqueda%'
-        ) ORDER BY $order_by LIMIT $inicio, $registros";
+            if (isset($busqueda) && $busqueda != "") {
+                $consulta_datos = "SELECT * FROM promociones WHERE (
+                    nombre_promocion LIKE '%$busqueda%' OR
+                    fecha_inicio_promocion LIKE '%$busqueda%' OR
+                    fecha_fin_promocion LIKE '%$busqueda%' OR
+                    descuento_promocion LIKE '%$busqueda%' OR
+                    detalle_promocion LIKE '%$busqueda%'
+                ) ORDER BY $order_by LIMIT $inicio, $registros";
 
-        $consulta_total = "SELECT COUNT(id_promocion) FROM promociones WHERE (
-            nombre_promocion LIKE '%$busqueda%' OR
-            fecha_inicio_promocion LIKE '%$busqueda%' OR
-            fecha_fin_promocion LIKE '%$busqueda%' OR
-            descuento_promocion LIKE '%$busqueda%' OR
-            detalle_promocion LIKE '%$busqueda%'
-        )";
-    } else {
-        $consulta_datos = "SELECT * FROM promociones ORDER BY $order_by LIMIT $inicio, $registros";
+                $consulta_total = "SELECT COUNT(id_promocion) FROM promociones WHERE (
+                    nombre_promocion LIKE '%$busqueda%' OR
+                    fecha_inicio_promocion LIKE '%$busqueda%' OR
+                    fecha_fin_promocion LIKE '%$busqueda%' OR
+                    descuento_promocion LIKE '%$busqueda%' OR
+                    detalle_promocion LIKE '%$busqueda%'
+                )";
+            } else {
+                $consulta_datos = "SELECT * FROM promociones ORDER BY $order_by LIMIT $inicio, $registros";
 
-        $consulta_total = "SELECT COUNT(id_promocion) FROM promociones";
-    }
+                $consulta_total = "SELECT COUNT(id_promocion) FROM promociones";
+            }
 
-    $datos = $this->ejecutarConsulta($consulta_datos);
-    $datos = $datos->fetchAll();
+            $datos = $this->ejecutarConsulta($consulta_datos);
+            $datos = $datos->fetchAll();
 
-    $total = $this->ejecutarConsulta($consulta_total);
-    $total = (int)$total->fetchColumn();
+            $total = $this->ejecutarConsulta($consulta_total);
+            $total = (int)$total->fetchColumn();
 
-    $numeroPaginas = ceil($total / $registros);
+            $numeroPaginas = ceil($total / $registros);
 
-    $tabla .= '
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="pc-dt-simple">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Fecha Inicio</th>
-                            <th>Fecha Finalizacion</th>
-                            <th>Descuento</th>
-                            <th>Detalle</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>';
-
-    if ($total >= 1 && $pagina <= $numeroPaginas) {
-        $contador = $inicio + 1;
-        $pagina_inicio = $inicio + 1; 
-        foreach ($datos as $filas) {
             $tabla .= '
-                <tr>
-                    <td>' . $contador . '</td>
-                    <td>' . $filas['nombre_promocion'] . '</td>
-                    <td>' . $filas['fecha_inicio_promocion'] . '</td>
-                    <td>' . $filas['fecha_fin_promocion'] . '</td>
-                    <td>' . $filas['descuento_promocion'] . '</td>
-                    <td>' . $filas['detalle_promocion'] . '</td>
-                    <td><span class="badge bg-light-success rounded-pill f-12">' . '</span></td>
-                    <td class="text-center">
-                        <ul class="list-inline me-auto mb-0">
-                            <li class="list-inline-item align-bottom" data-bs-toggle="tooltip" title="Editar">
-                                <a href="' . APP_URL . 'actualizar-promocion/' . $filas['id_promocion'] . '">
-                                    <i class="ti ti-edit-circle f-18"></i>
-                                </a>
-                            </li>
-                            <li class="list-inline-item align-bottom" data-bs-toggle="tooltip" title="Eliminar">
-                                <form class="FormularioAjax validate-me" data-validate action="' . APP_URL . 'app/controllers/promocionController.php" method="POST" autocomplete="off">
-                                    <input type="hidden" name="modulo_promocion" value="eliminar">
-                                    <input type="hidden" name="id_promocion" value="' . $filas['id_promocion'] . '">
-                                    <button type="submit" class="avtar avtar-xs btn-link-danger btn-pc-default">
-                                        <i class="ti ti-trash f-18"></i>
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>';
-            $contador++;
-        }
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="pc-dt-simple">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Finalizacion</th>
+                                    <th>Descuento</th>
+                                    <th>Detalle</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
 
-        $pagina_final = $contador - 1;
-
-    } else {
-        if ($total >= 1) {
-            $tabla .= '
+            if ($total >= 1 && $pagina <= $numeroPaginas) {
+                $contador = $inicio + 1;
+                $pagina_inicio = $inicio + 1; 
+                foreach ($datos as $filas) {
+                    $tabla .= '
                         <tr>
-                            <td colspan="7">
-                                <div class="d-grid gap-2 mt-2">
-                                    <a href="' . $url . '1/"><button class="btn btn-primary" type="button">Recargar la página</button></a>
-                                </div>
+                            <td>' . $contador . '</td>
+                            <td>' . $filas['nombre_promocion'] . '</td>
+                            <td>' . $filas['fecha_inicio_promocion'] . '</td>
+                            <td>' . $filas['fecha_fin_promocion'] . '</td>
+                            <td>' . $filas['descuento_promocion'] . '</td>
+                            <td>' . $filas['detalle_promocion'] . '</td>
+                            <td><span class="badge bg-light-success rounded-pill f-12">' . '</span></td>
+                            <td class="text-center">
+                                <ul class="list-inline me-auto mb-0">
+                                    <li class="list-inline-item align-bottom" data-bs-toggle="tooltip" title="Editar">
+                                        <a href="' . APP_URL . 'actualizar-promocion/' . $filas['id_promocion'] . '">
+                                            <i class="ti ti-edit-circle f-18"></i>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item align-bottom" data-bs-toggle="tooltip" title="Eliminar">
+                                        <form class="FormularioAjax validate-me" data-validate action="' . APP_URL . 'app/controllers/promocionController.php" method="POST" autocomplete="off">
+                                            <input type="hidden" name="modulo_promocion" value="eliminar">
+                                            <input type="hidden" name="id_promocion" value="' . $filas['id_promocion'] . '">
+                                            <button type="submit" class="avtar avtar-xs btn-link-danger btn-pc-default">
+                                                <i class="ti ti-trash f-18"></i>
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </td>
                         </tr>';
-        } else {
+                    $contador++;
+                }
+
+                $pagina_final = $contador - 1;
+
+            } else {
+                if ($total >= 1) {
+                    $tabla .= '
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="d-grid gap-2 mt-2">
+                                            <a href="' . $url . '1/"><button class="btn btn-primary" type="button">Recargar la página</button></a>
+                                        </div>
+                                    </td>
+                                </tr>';
+                } else {
+                    $tabla .= '
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="text-center">No hay registros en el sistema</div>
+                                    </td>
+                                </tr>';
+                }
+            }
             $tabla .= '
-                        <tr>
-                            <td colspan="7">
-                                <div class="text-center">No hay registros en el sistema</div>
-                            </td>
-                        </tr>';
-        }
-    }
-    $tabla .= '
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer text-center bg-light border-0">
-                ';
-    if ($total >= 1 && $pagina <= $numeroPaginas) {
-        $tabla .= '<p class="text-center">Mostrando Promociones desde el ' . $pagina_inicio . ' al ' . $pagina_final . ' de un total de ' . $total . '</p>';
-        $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, 5);
-    }
-    $tabla .= '
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>';
-    return $tabla;
-}
+                        <div class="card-footer text-center bg-light border-0">
+                        ';
+            if ($total >= 1 && $pagina <= $numeroPaginas) {
+                $tabla .= '<p class="text-center">Mostrando Promociones desde el ' . $pagina_inicio . ' al ' . $pagina_final . ' de un total de ' . $total . '</p>';
+                $tabla .= $this->paginadorTablas($pagina, $numeroPaginas, $url, 5);
+            }
+            $tabla .= '
+                                </div>
+                            </div>';
+            return $tabla;
+        }
 
         /*Eliminar promociones */
         public function eliminarPromocionesModel(){
@@ -462,7 +462,7 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
             }
 
             /*Hacemos el Array*/
-            $datos_promocion = [
+            $datos = [
                 [
                     "campo_nombre" => "nombre_promocion",
                     "campo_marcador" => ":Nombre",
@@ -498,7 +498,7 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
 
             $actualizar_promocion = $this->actualizarDatos(
                 "promociones",
-                $datos_promocion,
+                $datos,
                 $condicion
             );
 
@@ -506,7 +506,8 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
             if($actualizar_promocion){
                 if($actualizar_promocion->rowCount() == 1){
                     $alerta=[
-                        "tipo" => "recargar",
+                        "tipo" => "redireccionar",
+                        "url" => APP_URL . "gestionar-promociones",
                         "titulo" => "Promoción actualizada",
                         "texto" => "La promoción **".$nombre."** ha sido actualizada exitosamente.",
                         "icono" => "success",
@@ -528,6 +529,16 @@ public function listarPromocionesPaginador($pagina, $registros, $url, $busqueda,
                 ];
             }
             return json_encode($alerta);
+        }
+
+        /*seleccionar promociones*/
+        public function seleccionarDatosPromocion($id_promocion) {
+        $conexion = $this->conectar();
+        $query = "SELECT * FROM promociones WHERE id_promocion = ?";
+        $datos = $conexion->prepare($query);
+        $datos->bindParam(1, $id_promocion, \PDO::PARAM_INT);
+        $datos->execute();
+        return $datos;
         }
     }
 ?>

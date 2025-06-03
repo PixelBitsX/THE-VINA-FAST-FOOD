@@ -5,24 +5,25 @@
         <div class="card">
             <div class="card-header text-center">
                 <?php
-
-                    use app\controllers\promocionController;
-                    $insPromocion = new promocionController();
+                    
+                    use app\models\promocionModels;
+                    
                     if(isset($_GET['views'])){
                         $url = explode("/", $_GET['views']);
                     } else {
                         $url = ["login"];
                     }
+                    $id_promocion = (int)$url[1];
 
-                    $id_promocion = $insPromocion->limpiarCadena($url[1]);
-                    include "app/views/inc/boton-atras.php";
-                    $datos_promocion = $insPromocion->seleccionarDatos("Unico", "promociones", "id_promocion", $id_promocion);
+                    $insPromocionModel = new promocionModels();
+                    $datos_promocion_stmt = $insPromocionModel->seleccionarDatosPromocion($id_promocion);
                     
-                    if($datos_promocion->rowCount() == 1){
-                        $datos = $datos_promocion->fetch();
-                ?> 
+                    include "app/views/inc/boton-atras.php";
+                    
+                    if($datos_promocion_stmt->rowCount() == 1){
+                        $datos = $datos_promocion_stmt->fetch(); // Obtenemos los datos como array
+                ?>
             </div>
-            <!-- [CONTENIDO DEL FORMULARIO DE ACTUALIZAR PROMOCIONES] Comienzo-->   
             <h4>EDITAR PROMOCIÓN</h4>
             <form class="FormularioAjax validate-me" data-validate action="<?php echo APP_URL ?>app\controllers\promocionController.php" method="POST" autocomplete="on" enctype="multipart/form-data">
                 <div class="card-body">
@@ -63,7 +64,7 @@
                 </div>
             </form>
             <?php
-                } else { 
+                } else { // Si no se encontró la promoción
                     include "app/views/inc/alerta-error.php";
                 }
             ?>
@@ -71,3 +72,4 @@
         </div>
     </div>
 </div>
+<!-- [FORMULARIO PARA ACTUALIZAR USUARIOS] Fin -->
