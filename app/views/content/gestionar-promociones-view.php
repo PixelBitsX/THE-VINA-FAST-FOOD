@@ -27,16 +27,60 @@
                                         <small class="form-text text-muted">Ejemplo: 12/12/2025</small>
                                     </div>
                                     <div class="form-group col-lg-4">
-                                        <label class="form-label">Descuento:</label>
-                                        <input type="text" class="form-control" name="descuento_promocion" pattern="^\d{2,3}$" required>
-                                        <small class="form-text text-muted">Ejemplo: "50"</small>
-                                    </div>
-                                    <div class="form-group col-lg-4">
                                         <label class="form-label">Detalle:</label>
                                         <input type="text" class="form-control" name="detalle_promocion" pattern="^[a-zA-ZáéíóúüÁÉÍÓÚñÑ0-9\s]{0,255}$">
                                         <small class="form-text text-muted">Ejemplo: combo doble perro sencillo y doble hamburguesa con refresco</small>
                                     </div>
                                 </div>
+                                <hr class="my-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Elementos de la Promoción:</label>
+                                    <div id="elementos-promocion-container">
+                                        <div class="row g-3 align-items-end elemento-promocion-row mb-3 border p-2 rounded">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Tipo:</label>
+                                        <div class="form-check form-switch custom-switch-v1 mb-2">
+                                            <input type="checkbox" class="form-check-input input-primary switch-tipo-elemento" 
+                                                id="switchTipoElemento_0" data-row-id="0" value="producto" checked> 
+                                            <span class="form-check-label-text" for="switchTipoElemento_0">Producto</span>
+                                            <input type="hidden" name="tipo_elemento[]" class="hidden-tipo-elemento" value="producto"> 
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <label class="form-label">Elemento:</label>
+                                        <select class="form-control select-elemento" name="id_elemento[]" required>
+                                            <option value="">Seleccione un tipo primero</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-2">
+                                        <label class="form-label">Cantidad:</label>
+                                        <input type="number" class="form-control cantidad-elemento" name="cantidad_elemento[]" min="1" value="1" required>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label class="form-label">Descuento (%):</label>
+                                        <input type="number" class="form-control descuento-elemento" name="descuento_elemento[]" min="0" max="100" value="0" required>
+                                        <small class="form-text text-muted">Max 100%</small>
+                                    </div>
+                                    
+                                    <div class="col-md-2 text-end">
+                                        <button type="button" class="btn btn-danger btn-sm eliminar-elemento">
+                                            <i class="ti ti-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                                    <button type="button" class="btn btn-info btn-sm mt-2" id="btn-agregar-elemento">
+                                        <i class="ti ti-plus"></i> Añadir Elemento
+                                    </button>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label class="form-label">Costo Total de Promoción (Estimado):</label>
+                                    <p id="costo_total_promocion" class="form-control-plaintext fs-4 text-success">$0.00</p>
+                                </div>
+                                <hr class="my-4">
                                 <div class="modal-footer text-center justify-content-center">
                                     <button type="reset" class="btn btn-danger d-inline-flex"><i class="ti ti-trash"></i>Limpiar</button>
                                     <button type="submit" class="btn btn-success d-inline-flex"><i class="ti ti-file-check"></i>Guardar</button>
@@ -89,6 +133,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="col-12" id="tabla-Promociones-container">
                         <?php
                             
@@ -97,10 +142,8 @@
                             if (isset($_POST['actualizar_tabla'])) {
                                 $busqueda = isset($_POST['busqueda']) ? $_POST['busqueda'] : "";
                                 $orden = isset($_POST['orden_busqueda']) ? $_POST['orden_busqueda'] : "";
-                                // Pasamos $pagina_actual en lugar de $vista[1]
                                 echo $insPromocion->listarPromocionesPaginador($pagina_actual, 10, $vista[0], $busqueda, $orden);
                             } else {
-                                // Pasamos $pagina_actual en lugar de $vista[1]
                                 echo $insPromocion->listarPromocionesPaginador($pagina_actual, 10, $vista[0], "", "");
                             }
                         ?>
